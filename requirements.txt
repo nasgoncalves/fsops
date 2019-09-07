@@ -2,3 +2,4 @@ path.py==11.5.2
 attrs==19.1.0
 cattrs==0.9.0
 PyYAML==5.1.1
+pytz==2019.2

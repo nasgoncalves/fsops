@@ -5,6 +5,9 @@ import os
 from os import stat_result
 from path import Path
 
+from datetime import datetime
+import pytz
+
 from fsops.fso import Time
 from fsops.fso.exceptions import FSOTimeException
 
@@ -44,5 +47,12 @@ def test_time_from_path(mocker):
         0644, 0, 0, 0, 0, 0, 1, 0, 1545730073, 1445730073))
 
     t = Time.from_path(fso_path)
-    assert str(t.creation) == "2015-10-25 00:41:13"
-    assert str(t.modified) == "2018-12-25 09:27:53"
+
+    utc_create = Time.string_to_datetime(t.creation)
+    utc_modified = Time.string_to_datetime(t.modified)
+
+    utc_create = utc_create.replace(tzinfo=pytz.utc)
+    utc_modified = utc_modified.replace(tzinfo=pytz.utc)
+
+    assert str(utc_create) == "2015-10-25 00:41:13+00:00"
+    assert str(utc_modified) == "2018-12-25 09:27:53+00:00"
