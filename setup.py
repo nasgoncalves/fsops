@@ -23,7 +23,7 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='inte',
+    name='fsops',
     version='0.1.0',
     license='BSD 2-Clause License',
     description='An example package. Generated with https://github.com/ionelmc/cookiecutter-pylibrary',
@@ -78,7 +78,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'inte = cli:main',
+            'fsops = cli:main',
         ]
     },
 )
