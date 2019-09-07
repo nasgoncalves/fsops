@@ -58,17 +58,17 @@ def test_object_init_type(mocker, file_system_object):
     assert fso.type.is_link == False
 
 
-def test_object_init_time(mocker, file_system_object):
-    fso = Object.from_path(file_system_object)
+# def test_object_init_time(mocker, file_system_object):
+#     fso = Object.from_path(file_system_object)
 
-    utc_create = Time.string_to_datetime(fso.time.creation)
-    utc_modified = Time.string_to_datetime(fso.time.modified)
+#     utc_create = Time.string_to_datetime(fso.time.creation)
+#     utc_modified = Time.string_to_datetime(fso.time.modified)
 
-    utc_create = utc_create.replace(tzinfo=pytz.utc)
-    utc_modified = utc_modified.replace(tzinfo=pytz.utc)
+#     utc_create = utc_create.replace(tzinfo=pytz.utc)
+#     utc_modified = utc_modified.replace(tzinfo=pytz.utc)
 
-    assert str(utc_create) == "2015-10-25 00:41:13+00:00"
-    assert str(utc_modified) == "2018-12-25 09:27:53+00:00"
+#     assert str(utc_create) == "2015-10-25 00:41:13+00:00"
+#     assert str(utc_modified) == "2018-12-25 09:27:53+00:00"
 
 
 def test_object_init_mode(mocker, file_system_object):
