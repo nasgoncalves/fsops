@@ -12,4 +12,4 @@ jobs:
 
     steps:
       - checkout
-      - run: pip install tox && tox -epy27
+      - run: pip install --user tox && tox -epy27
