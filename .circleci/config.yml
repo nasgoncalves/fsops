@@ -12,6 +12,9 @@ jobs:
 
     steps:
       - checkout
-      - run: pip install --user tox && tox -epy37
+      - run: pip install tox && tox -epy37
       - codecov/upload:
           file: tests/coverage.xml
+
+workflows:
+  version: 2
