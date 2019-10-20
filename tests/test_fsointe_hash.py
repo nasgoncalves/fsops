@@ -16,7 +16,8 @@ def test_hash_init():
 def test_hash_validation():
     with pytest.raises(FSOHashException) as excinfo:
         Hash(sha512="1")
-    assert excinfo.value.message == 'Not a valid SHA512 hash'
+    print(excinfo)
+    assert str(excinfo.value) == 'Not a valid SHA512 hash'
 
 
 def test_hash_file(mocker):
@@ -42,8 +43,8 @@ def test_hash_dir(mocker):
     mock_path_files = mocker.patch.object(fso_path, "files")
     mock_path_files.return_value = ['file1']
 
-    mock_open_file = mocker.mock_open(read_data='data')
-    mock_open = mocker.patch("__builtin__.open", mock_open_file)
+    mock_open_file = mocker.mock_open(read_data=b'data')
+    mock_open = mocker.patch("builtins.open", mock_open_file)
 
     hash_dir = Hash.from_path(fso_path)
 
@@ -54,7 +55,7 @@ def test_hash_dir(mocker):
 
     import hashlib
     hash_sha512 = hashlib.sha512()
-    hash_sha512.update('data')
+    hash_sha512.update(b'data')
 
     assert hash_dir.sha512 == hash_sha512.hexdigest()
 
@@ -70,4 +71,4 @@ def test_hash_not_recognized_fso_type(mocker):
 
     with pytest.raises(FSOHashException) as excinfo:
         Hash.from_path(fso_path)
-    assert excinfo.value.message == 'FileSystem object not recognized'
+    assert str(excinfo.value) == 'FileSystem object not recognized'

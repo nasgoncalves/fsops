@@ -22,7 +22,7 @@ def test_metatype_from_path_isdir(mocker):
 
 @pytest.mark.parametrize("data,isbinary", [
     ("data", False),
-    ("\x01\x02", True),
+    ("\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02", True),
 ])
 def test_metatype_from_path_isfile_binary(mocker, data, isbinary):
     fso_path = Path('test')

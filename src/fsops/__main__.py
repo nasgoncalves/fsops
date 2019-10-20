@@ -27,7 +27,7 @@ def cli():
 @cli.command()
 @click.argument('path')
 @click.argument('db_path')
-def compare(path, db_path):
+def diff(path, db_path):
     path = Path(path)
     db_path = Path(db_path)
 
@@ -79,7 +79,7 @@ def compare(path, db_path):
 @click.argument('save')
 @click.option('--dbformat', default="json", help='Output type')
 @click.option('--debug/--quiet', default=False)
-def check(path, save, dbformat, debug):
+def dump(path, save, dbformat, debug):
     path = Path(path)
     save = Path(save)
 
