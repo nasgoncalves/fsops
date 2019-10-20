@@ -22,7 +22,7 @@ def test_time_datetime_to_string(ts, datetime):
 def test_time_datetime_to_string_exception():
     with pytest.raises(FSOTimeException) as excinfo:
         Time.datetime_to_string("ahahah")
-    assert excinfo.value.message == 'Not a valid timestamp (datetime_to_string)'
+    assert str(excinfo.value) == 'Not a valid timestamp (datetime_to_string)'
 
 
 @pytest.mark.parametrize("datetime_str,ts", [
@@ -36,7 +36,7 @@ def test_time_string_to_datetime(datetime_str, ts):
 def test_time_string_to_datetime_exception():
     with pytest.raises(FSOTimeException) as excinfo:
         Time.string_to_datetime("ahahah")
-    assert excinfo.value.message == 'Not a valid timestamp (string_to_datetime)'
+    assert str(excinfo.value) == 'Not a valid timestamp (string_to_datetime)'
 
 
 # def test_time_from_path(mocker):

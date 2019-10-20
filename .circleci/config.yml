@@ -1,15 +1,17 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
-version: 2
+---
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.5
+
 jobs:
   build:
     docker:
-      - image: circleci/python:2.7.16
+      - image: circleci/python:3.7.1
 
     working_directory: ~/repo
 
     steps:
       - checkout
-      - run: pip install --user tox && tox -epy27
+      - run: pip install --user tox && python -m tox -epy37
+      - codecov/upload:
+          file: tests/coverage.xml

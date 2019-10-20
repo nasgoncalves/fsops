@@ -11,7 +11,7 @@ class ObjectBase(object):
     def __repr__(self):
         fields = []
         for field in self._fields:
-            fields.append('{}={!r}'.format(
+            fields.append('{}={}'.format(
                 field, getattr(self, field)))
 
         return "{}({})".format(type(self).__name__,
@@ -39,7 +39,7 @@ class ObjectBase(object):
                 key = '.'.join([key, item[0]])
                 item = item[1]
 
-            parsable.append("{}={!r}".format(key, item))
+            parsable.append("{}={}".format(key, item))
 
         return ' '.join(parsable)
 
@@ -62,9 +62,11 @@ def json_loads_byteified(json_text):
 
 
 def _byteify(data, ignore_dicts=False):
-    # if this is a unicode string, return its string representation
-    if isinstance(data, unicode):
-        return data.encode('utf-8')
+    # # if this is a unicode string, return its string representation
+    # if isinstance(data, str):
+    #     if data[0:2] == "b'" and data[-1:] == "'":
+    #         return data[2:-1]
+
     # if this is a list of values, return list of byteified values
     if isinstance(data, list):
         return [_byteify(item, ignore_dicts=True) for item in data]
@@ -73,7 +75,7 @@ def _byteify(data, ignore_dicts=False):
     if isinstance(data, dict) and not ignore_dicts:
         return {
             _byteify(key, ignore_dicts=True): _byteify(value, ignore_dicts=True)
-            for key, value in data.iteritems()
+            for key, value in data.items()
         }
     # if it's anything else, return it in its original form
     return data

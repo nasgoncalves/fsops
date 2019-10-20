@@ -1,6 +1,7 @@
 import mimetypes
 from datetime import datetime
 
+import magic
 import attr
 from attr.validators import instance_of
 
@@ -8,6 +9,7 @@ from .hash import Hash
 from .object_base import ObjectBase
 from .exceptions import FSOTypeException
 from .exceptions import FSOTimeException
+
 
 @attr.s(frozen=True)
 class Type(ObjectBase):
@@ -29,7 +31,7 @@ class Type(ObjectBase):
 
     @classmethod
     def from_path(cls, path):
-        if sum([path.isfile(), path.isdir(), path.islink()]) != 1:
+        if sum([path.isfile(), path.isdir()]) != 1:
             raise FSOTypeException('File can only be of one type')
 
         return Type(path.isfile(), path.isdir(), path.islink())
@@ -96,7 +98,6 @@ class Time(ObjectBase):
             raise FSOTimeException(
                 'Not a valid timestamp (datetime_to_string)')
 
-
     @classmethod
     def from_path(cls, path):
         """
@@ -149,8 +150,8 @@ class MetaType(ObjectBase):
             mimetype = 'inode/directory'
 
         elif path.isfile():
-            mimetype = mimetypes.guess_type(
-                str(path.abspath().encode('utf-8')))[0]
+            mimetype = magic.from_file(
+                path.abspath(), mime=True)
 
             if not mimetype:
                 mimetype = 'unidentified'
@@ -173,10 +174,28 @@ class MetaType(ObjectBase):
         if path.isdir() or path.islink():
             return False
 
-        textchars = bytearray({7, 8, 9, 10, 12, 13, 27}
-                              | set(range(0x20, 0x100)) - {0x7f})
-        bytes_ = path.open('rb').read(1024)
-        return bool(bytes_.translate(None, textchars))
+        _text_characters = (
+            b''.join(bytes((i,)) for i in range(32, 127)) +
+            b'\n\r\t\f\b')
+
+        block = path.open('rb').read(512)
+
+        if str(b"\x00") in block:
+                # Files with null bytes are binary
+            return False
+        elif not block:
+            # An empty file is considered a valid text file
+            return True
+
+        # Use translate's 'deletechars' argument to efficiently remove all
+        # occurrences of _text_characters from the block
+
+        text_chr = str.maketrans(dict.fromkeys(_text_characters))
+        nontext = block.translate(text_chr)
+        return not float(len(nontext)) / len(block) <= 0.30
+
+        # nontext = block.translate(None, _text_characters)
+        # return not float(len(nontext)) / len(block) <= 0.30
 
 
 def hash_converter(value):
@@ -231,14 +250,13 @@ class Object(ObjectBase):
         Returns:
             File -- Returns a instance of File
         """
-
-        return Object(path=str(path.abspath().encode('utf-8')),
-                      name=str(path.basename().encode('utf-8')),
-                      ext=str(path.ext),
+        return Object(path=path.abspath(),
+                      name=path.basename(),
+                      ext=path.ext,
                       hash=Hash.from_path(path),
                       size=path.getsize(),
                       type=Type.from_path(path),
                       time=Time.from_path(path),
                       owner=path.get_owner(),
-                      mode=str(oct(path.stat().st_mode)),
+                      mode=str(oct(path.stat().st_mode))[2:],
                       meta=MetaType.from_path(path))
